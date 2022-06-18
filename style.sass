@@ -4,9 +4,48 @@ body
     box-sizing: border-box
 
 #app
+  flex-direction: column
   font-family: Avenir, Helvetica, Arial, sans-serif
   -webkit-font-smoothing: antialiased
   -moz-osx-font-smoothing: grayscale
-  text-align: center
   color: #2c3e50
   margin-top: 60px
+
+div
+  display: flex
+
+.title
+  align-self: center
+
+.chat
+  justify-content: center
+
+  &__form-container
+    padding: 30px
+    border: 3px solid
+    border-radius: 15px
+
+  &__form
+    display: flex
+    flex-direction: column
+    height: 300px
+
+  &__form-room
+    flex-direction: column
+    margin-bottom: 30px
+  
+  &__form-name
+    flex-direction: column
+
+  &__form-button
+    border: 1px solid #2c3e50
+    border-radius: 10px
+    background: #2c3e50
+    color: white
+    font-size: 16px
+    padding: 10px
+    margin-top: auto
+    cursor: pointer
+
+label
+  margin-bottom: 5px
