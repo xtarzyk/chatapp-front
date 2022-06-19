@@ -2,9 +2,9 @@ import { io } from 'socket.io-client'
 import { createForm } from './form'
 
 const socket = io('ws://localhost:3001')
-const chat = document.querySelector('.chat') as HTMLElement
+// const $chat: JQuery<HTMLElement> = $('.chat')
 
-createForm(chat)
+createForm()
 
 socket.emit('hello from client')
 
