@@ -1,3 +1,7 @@
+import { io } from 'socket.io-client'
+
+const socket = io('ws://localhost:3001')
+
 export const createForm = () => {
     const $formContainer = $('<div>').addClass('chat__form-container')
     const $form = $('<form>').addClass('chat__form').appendTo($formContainer)
@@ -10,21 +14,14 @@ export const createForm = () => {
     const $nameInput = $('<input>').attr('type', 'text').appendTo($formName)
 
     $formContainer.appendTo('.chat')
+    joinRoom($roomInput, $nameInput, $button)
 }
 
-
-    // const formTemplate = `
-    //         <$form class="chat__form">
-    //             <div class="chat__form-room">
-    //                 <label for="room">Room:</label>
-    //                 <input type="text" name="room" />
-    //             </div>
-    //             <div class="chat__form-name">    
-    //                 <label for="name">Your name:</label>
-    //                 <input type="text" name="name">
-    //             </div>
-    //             <input type="button" class="chat__form-button" value="Enter" />
-    //         </$form>
-    // `
-
-    // $formContainer.innerHTML = formTemplate
+const joinRoom = ($roomInput: JQuery<HTMLElement>, $nameInput: JQuery<HTMLElement>, $button: JQuery<HTMLElement>) => {
+    $button.on('click', () => {
+        if($roomInput.val() && $nameInput.val()) {
+            socket.emit('room', $roomInput.val())
+            socket.emit('name', $nameInput.val())
+        }
+    })
+}
