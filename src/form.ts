@@ -18,10 +18,15 @@ export const createForm = () => {
 }
 
 const joinRoom = ($roomInput: JQuery<HTMLElement>, $nameInput: JQuery<HTMLElement>, $button: JQuery<HTMLElement>) => {
+    
     $button.on('click', () => {
+        const room = $roomInput.val()
         if($roomInput.val() && $nameInput.val()) {
-            socket.emit('room', $roomInput.val())
+            socket.emit('room', room)
             socket.emit('name', $nameInput.val())
+            $roomInput.val('')
+            $nameInput.val('')
+            window.location.assign(`/room/${room}`)
         }
     })
 }
