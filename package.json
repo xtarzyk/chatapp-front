@@ -13,7 +13,10 @@
     "vite": "^2.9.9"
   },
   "dependencies": {
+    "deparam.js": "^2.1.4",
     "jquery": "^3.6.0",
+    "jquerydeparam": "^1.1.5",
+    "jqueryrouter": "^2.2.12",
     "socket.io-client": "^4.5.1"
   }
 }

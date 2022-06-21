@@ -17,16 +17,38 @@ export const createForm = () => {
     joinRoom($roomInput, $nameInput, $button)
 }
 
+const createChatRoom = (room: string) => {
+    $('<h2>').text(`Welcome to ${room}`).appendTo('.chat')
+
+    const $messages = $('<ul>').addClass('chat__messages').appendTo('.chat')
+    const $sendForm = $('<form>').addClass('chat__send-form').appendTo('.chat')
+    const $messageInput = $('<input>').addClass('chat__message-input').appendTo($sendForm)
+    const $sendButton = $('<button>').text('Send').addClass('chat__send-message-button').appendTo($sendForm)
+}
+
 const joinRoom = ($roomInput: JQuery<HTMLElement>, $nameInput: JQuery<HTMLElement>, $button: JQuery<HTMLElement>) => {
     
     $button.on('click', () => {
-        const room = $roomInput.val()
-        if($roomInput.val() && $nameInput.val()) {
+        const room = $roomInput.val() as string
+        if(room && $nameInput.val()) {
             socket.emit('room', room)
             socket.emit('name', $nameInput.val())
             $roomInput.val('')
             $nameInput.val('')
-            window.location.assign(`/room/${room}`)
+            // window.location.assign(`/room/${room}`)
+            window.history.pushState({}, '', `/room/${room}`)
+            handleRoute(room)
         }
     })
+}
+
+export const handleRoute = (room: string) => {
+    const currentPath = window.location.pathname
+
+    if (currentPath !== '/') {
+        $('.chat__form-container').remove()
+        createChatRoom(room)
+        return
+    }
+    createForm()
 }
