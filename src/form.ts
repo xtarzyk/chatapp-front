@@ -1,7 +1,10 @@
 import { io } from 'socket.io-client'
+import { Room, User, Message } from './types/index'
 
 const socket = io('ws://localhost:3001')
-let roomUserData: Object = []
+let roomData: Room
+let userData: User
+let messagesAll: Array<Message> = []
 
 const createForm = () => {
     const $formContainer = $('<div>').addClass('chat__form-container')
@@ -29,8 +32,50 @@ const createChatRoom = (room: string) => {
     sendMessage($messages, $messageInput, $sendButton)
 }
 
+const displayMessages = (messages: Array<Message>) => {
+    messages.forEach((message: Message) => {
+        const messageData = $('<li>').text(`${message.text}`)
+        $('.chat__messages').append(messageData)
+    })
+}
+
+const getRoomData = () => {
+    socket.on('getRoomData', (room: Room) => {
+        const newRoom: Room = {
+            roomId: room.roomId,
+            roomName: room.roomName
+        } 
+        console.log(room)
+        
+        roomData = newRoom
+
+        const roomMessages = messagesAll.filter(message => message.roomId === roomData.roomId)
+        console.log(roomMessages)
+        displayMessages(roomMessages)
+    })
+}
+
+const getUserData = () => {
+    socket.on('getUserData', (user: User) => {
+        const newUser: User = {
+            userId: user.userId,
+            userName: user.userName
+        }
+        console.log(user)
+        
+        userData = newUser
+    })
+}
+
+const getMessages = () => {
+        socket.emit('getMessages', (messages: Array<Message>) => {
+            messagesAll = messagesAll.concat(messages)
+            console.log(messagesAll)
+        })
+}
+
 const joinRoom = ($roomInput: JQuery<HTMLElement>, $nameInput: JQuery<HTMLElement>, $button: JQuery<HTMLElement>) => {
-    $button.on('click', () => {
+    $button.on('click', async () => {
         const room = $roomInput.val() as string
         const name = $nameInput.val() as string
 
@@ -41,31 +86,23 @@ const joinRoom = ($roomInput: JQuery<HTMLElement>, $nameInput: JQuery<HTMLElemen
             $nameInput.val('')
             // window.location.assign(`/room/${room}`)
             window.history.pushState({}, '', `${room}`)
-            getRoomUserData(name, room)
             handleRoute(room)
+            getUserData()
+            getRoomData()
         }
-    })
-}
-
-const getRoomUserData = (userName: string, roomName: string) => {
-    socket.emit('userName', userName)
-    socket.on('getUserData', (user) => {
-        console.log(user)
-    })
-
-    socket.emit('roomName', roomName)
-    socket.on('getRoomData', room => {
-        console.log(room)
     })
 }
 
 const sendMessage = ($messages: JQuery<HTMLElement>, $messageInput: JQuery<HTMLElement>, $sendButton: JQuery<HTMLElement>) => {
     $sendButton.on('click', (event) => {
         const messageValue = $messageInput.val()
-        console.log(messageValue)
         event.preventDefault()
         if (messageValue) {
-            socket.emit('sendMessage', { text: messageValue })
+            socket.emit('sendMessage', {
+                roomId: roomData.roomId,
+                userId: userData.userId,
+                text: messageValue 
+            })
             $messageInput.val('')
             console.log('Message send', messageValue)
         }
@@ -73,7 +110,7 @@ const sendMessage = ($messages: JQuery<HTMLElement>, $messageInput: JQuery<HTMLE
 
     socket.on('receiveMessage', message => {
         console.log('receiveMessage', message)
-        $('<li>').text(message).appendTo($messages)
+        $('<li>').text(`[${userData.userName}]: ${message.text}`).appendTo($messages)
     })
 }
 
@@ -87,3 +124,5 @@ export const handleRoute = (room: string) => {
     }
     createForm()
 }
+
+getMessages()
