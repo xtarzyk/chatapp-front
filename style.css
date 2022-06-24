@@ -116,6 +116,7 @@ div {
   border-radius: 25px;
   outline: none;
   color: #fff;
+  cursor: pointer;
 }
 
 label {
