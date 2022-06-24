@@ -19,7 +19,7 @@ export const createChatRoom = (room: string) => {
 
 const displayMessages = (messages: Array<Message>) => {
     messages.forEach((message: Message) => {
-        const messageData = $('<li>').text(`${message.text}`)
+        const messageData = $('<li>').text(`[${ message.userName }]: ${ message.createdAt } \r\n ${ message.text }`)
         $('.chat__messages').append(messageData)
     })
 }
@@ -67,7 +67,8 @@ const sendMessage = ($messages: JQuery<HTMLElement>, $messageInput: JQuery<HTMLE
             socket.emit('sendMessage', {
                 roomId: roomData.roomId,
                 userId: userData.userId,
-                text: messageValue 
+                userName: userData.userName,
+                text: messageValue
             })
             $messageInput.val('')
             console.log('Message send', messageValue)
@@ -76,7 +77,7 @@ const sendMessage = ($messages: JQuery<HTMLElement>, $messageInput: JQuery<HTMLE
 
     socket.on('receiveMessage', message => {
         console.log('receiveMessage', message)
-        $('<li>').text(`[${userData.userName}]: ${message.text}`).appendTo($messages)
+        $('<li>').text(`[${ message.userName }]: ${ message.createdAt } \r\n ${ message.text }`).appendTo($messages)
     })
 }
 

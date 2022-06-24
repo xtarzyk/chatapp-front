@@ -20,7 +20,7 @@ export const createForm = () => {
 }
 
 const joinRoom = ($roomInput: JQuery<HTMLElement>, $nameInput: JQuery<HTMLElement>, $button: JQuery<HTMLElement>) => {
-    $button.on('click', async () => {
+    $button.on('click', () => {
         const room = $roomInput.val() as string
         const name = $nameInput.val() as string
 
