@@ -2,7 +2,6 @@ import { io } from 'socket.io-client'
 import { handleRoute } from './utils'
 import { Message, Room, User } from './types'
 import { displayMessages } from './chat'
-// import { getRoomData, getUserData } from './chat'
 
 const socket = io('ws://localhost:3001')
 const currentPath = window.location.pathname
