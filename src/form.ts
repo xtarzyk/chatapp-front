@@ -1,8 +1,4 @@
-import { io } from 'socket.io-client'
-import { getRoomData, getUserData } from './chat'
-import { handleRoute } from './utils'
-
-const socket = io('ws://localhost:3001')
+import { joinRoom } from './main'
 
 export const createForm = () => {
     const $formContainer = $('<div>').addClass('chat__form-container')
@@ -17,23 +13,4 @@ export const createForm = () => {
 
     $formContainer.appendTo('.chat')
     joinRoom($roomInput, $nameInput, $button)
-}
-
-const joinRoom = ($roomInput: JQuery<HTMLElement>, $nameInput: JQuery<HTMLElement>, $button: JQuery<HTMLElement>) => {
-    $button.on('click', () => {
-        const room = $roomInput.val() as string
-        const name = $nameInput.val() as string
-
-        if(room && name) {
-            socket.emit('room', room)
-            socket.emit('name', name)
-            $roomInput.val('')
-            $nameInput.val('')
-            // window.location.assign(`/room/${room}`)
-            window.history.pushState({}, '', `${room}`)
-            handleRoute(room)
-            getUserData()
-            getRoomData()
-        }
-    })
 }
