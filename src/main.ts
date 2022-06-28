@@ -7,7 +7,7 @@ const currentPath = window.location.pathname
 
 let username: string
 let currentRoom: string
-// let messagesAll: Array<Message> = []
+// let roomMessages: Array<Object> = []
 
 export const createForm = () => {
     const $formContainer = $('<div>').addClass('chat__form-container')
@@ -21,7 +21,6 @@ export const createForm = () => {
     const $nameInput = $('<input>').attr('type', 'text').appendTo($formName)
 
     $formContainer.appendTo('.chat')
-    // joinRoom($roomInput, $nameInput, $button)
 
     $button.on('click', () => {
         const room = $roomInput.val() as string
@@ -29,8 +28,6 @@ export const createForm = () => {
 
         if(room && name) {
             socket.emit('joinRoom', { room, user: name })
-            // socket.emit('room', room)
-            // socket.emit('name', name)
             $roomInput.val('')
             $nameInput.val('')
             // window.location.assign(`/room/${room}`)
@@ -40,15 +37,24 @@ export const createForm = () => {
     })
 }
 
-socket.on('getRoomUser', ({ room, user }) => {
+socket.on('getRoomUser', ({ room, user }, messages) => {
     console.log(room)
-    // createChatRoom(room)
     currentRoom = room
     console.log(username)
     username = user
+    displayMessages(messages)
 })
 
-export const createChatRoom = (room: string) => {
+const renderMessage = (message: Object) => {
+    const $messageData = $('<div>').addClass('chat__message')
+    const $messageHeader = $('<div>').addClass('chat__message-header').appendTo($messageData)
+    const $userName = $('<p>').addClass('chat__message-username').text(`${ message.user }`).appendTo($messageHeader)
+    const $timeSpan = $('<span>').addClass('chat__message-timespan').text('00:00').appendTo($messageHeader)
+    const $messageText = $('<p>').text(`${ message.text }`).appendTo($messageData)
+    $('.chat__messages').append($messageData)
+}
+
+const createChatRoom = (room: string) => {
     $('<h2>').text(`Welcome to ${room} room`).appendTo('.chat')
 
     const $messages = $('<ul>').addClass('chat__messages').appendTo('.chat')
@@ -72,16 +78,16 @@ export const createChatRoom = (room: string) => {
 
     socket.on('receiveMessage', message => {
         console.log('receiveMessage', message)
-        $('<li>').text(`[${ message.user }]: ${ message.text }`).appendTo($messages)
+        renderMessage(message)
+        // $('<div>').addClass('chat__message').text(`[${ message.user }]: ${ message.text }`).appendTo($messages)
     })
 }
 
-// export const displayMessages = (messages: Array<Object>) => {
-//     messages.forEach((message: Object) => {
-//         const messageData = $('<li>').text(`[${ message.user }]: ${ message.text }`)
-//         $('.chat__messages').append(messageData)
-//     })
-// }
+const displayMessages = (messages: Array<Object>) => {
+    messages.forEach((message: Object) => {
+        renderMessage(message)
+    })
+}
 
 const handleRoute = (room: string) => {
     const currentPath = window.location.pathname
